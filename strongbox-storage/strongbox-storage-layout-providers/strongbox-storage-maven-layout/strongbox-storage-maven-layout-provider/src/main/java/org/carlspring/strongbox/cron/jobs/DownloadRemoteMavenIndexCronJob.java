@@ -2,13 +2,13 @@ package org.carlspring.strongbox.cron.jobs;
 
 import org.carlspring.strongbox.config.MavenIndexerEnabledCondition;
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.properties.*;
+import org.carlspring.strongbox.cron.jobs.fields.*;
 import org.carlspring.strongbox.repository.IndexedMavenRepositoryFeatures;
 
 import javax.inject.Inject;
-import java.util.List;
+import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import com.google.common.collect.ImmutableSet;
 import org.springframework.core.env.Environment;
 
 /**
@@ -25,11 +25,11 @@ public class DownloadRemoteMavenIndexCronJob
 
     private static final String PROPERTY_REPOSITORY_ID = "repositoryId";
 
-    private static final List<CronJobProperty> PROPERTIES = Arrays.asList(new CronJobProperty[]{
-            new CronJobStorageIdAutocompleteProperty(new CronJobStringTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_STORAGE_ID)))),
-            new CronJobRepositoryIdAutocompleteProperty(new CronJobStringTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_REPOSITORY_ID)))) });
+    private static final Set<CronJobField> FIELDS = ImmutableSet.of(
+            new CronJobStorageIdAutocompleteField(new CronJobStringTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_STORAGE_ID)))),
+            new CronJobRepositoryIdAutocompleteField(new CronJobStringTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_REPOSITORY_ID)))));
 
     @Inject
     private IndexedMavenRepositoryFeatures features;
@@ -72,21 +72,14 @@ public class DownloadRemoteMavenIndexCronJob
     }
 
     @Override
-    public List<CronJobProperty> getProperties()
+    public CronJobDefinition getCronJobDefinition()
     {
-        return PROPERTIES;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Download Remote Maven Index Cron Job";
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "Download Remote Maven Index Cron Job";
+        return CronJobDefinition.newBuilder()
+                                .id(DownloadRemoteMavenIndexCronJob.class.getCanonicalName())
+                                .name("Download Remote Maven Index Cron Job")
+                                .description("Download Remote Maven Index Cron Job")
+                                .fields(FIELDS)
+                                .build();
     }
 
     public static boolean shouldDownloadAllRemoteRepositoryIndexes()

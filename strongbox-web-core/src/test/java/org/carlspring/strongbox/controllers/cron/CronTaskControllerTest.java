@@ -5,6 +5,7 @@ import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
 import org.carlspring.strongbox.cron.domain.CronTasksConfigurationDto;
 import org.carlspring.strongbox.cron.jobs.MyTask;
 import org.carlspring.strongbox.forms.cron.CronTaskConfigurationForm;
+import org.carlspring.strongbox.forms.cron.CronTaskDefinitionForm;
 import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
 
 import java.io.File;
@@ -148,6 +149,20 @@ public class CronTaskControllerTest
         deleteConfig(cronUuid);
     }
 
+    @Test
+    public void shouldReturnInvalidIdValidationError()
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setId("mummy");
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek();
+    }
+
 
     @Test
     public void testGroovyCronTaskConfiguration()
@@ -233,7 +248,7 @@ public class CronTaskControllerTest
         return cronTasksConfiguration.getCronTaskConfigurations()
                                      .stream()
                                      .filter(p -> "org.carlspring.strongbox.cron.jobs.DownloadRemoteMavenIndexCronJob".equals(
-                                                     p.getRequiredProperty(CRON_CONFIG_JOB_CLASS_KEY)))
+                                             p.getRequiredProperty(CRON_CONFIG_JOB_CLASS_KEY)))
                                      .filter(p -> "storage-common-proxies".equals(p.getProperty("storageId")))
                                      .filter(p -> "carlspring".equals(p.getProperty("repositoryId")))
                                      .collect(Collectors.toList());

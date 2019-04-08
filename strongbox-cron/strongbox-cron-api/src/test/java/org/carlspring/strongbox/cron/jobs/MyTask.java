@@ -1,10 +1,8 @@
 package org.carlspring.strongbox.cron.jobs;
 
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.properties.CronJobProperty;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Yougeshwar
@@ -20,21 +18,13 @@ public class MyTask
     }
 
     @Override
-    public List<CronJobProperty> getProperties()
+    public CronJobDefinition getCronJobDefinition()
     {
-        return Collections.emptyList();
+        return CronJobDefinition.newBuilder()
+                                .id(MyTask.class.getCanonicalName())
+                                .name("My Task")
+                                .description("My Task")
+                                .fields(Collections.emptySet())
+                                .build();
     }
-
-    @Override
-    public String getName()
-    {
-        return "My Task";
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "My Task";
-    }
-
 }

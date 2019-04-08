@@ -1,13 +1,13 @@
 package org.carlspring.strongbox.cron.jobs;
 
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.properties.*;
+import org.carlspring.strongbox.cron.jobs.fields.*;
 import org.carlspring.strongbox.repository.NugetRepositoryFeatures;
 
 import javax.inject.Inject;
-import java.util.List;
+import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import com.google.common.collect.ImmutableSet;
 import org.springframework.core.env.Environment;
 
 /**
@@ -21,11 +21,11 @@ public class DownloadRemoteFeedCronJob
 
     private static final String PROPERTY_REPOSITORY_ID = "repositoryId";
 
-    private static final List<CronJobProperty> PROPERTIES = Arrays.asList(new CronJobProperty[]{
-            new CronJobStorageIdAutocompleteProperty(new CronJobStringTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_STORAGE_ID)))),
-            new CronJobRepositoryIdAutocompleteProperty(new CronJobStringTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_REPOSITORY_ID)))) });
+    private static final Set<CronJobField> FIELDS = ImmutableSet.of(
+            new CronJobStorageIdAutocompleteField(new CronJobStringTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_STORAGE_ID)))),
+            new CronJobRepositoryIdAutocompleteField(new CronJobStringTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_REPOSITORY_ID)))));
 
     @Inject
     private NugetRepositoryFeatures features;
@@ -53,22 +53,16 @@ public class DownloadRemoteFeedCronJob
     }
 
     @Override
-    public List<CronJobProperty> getProperties()
+    public CronJobDefinition getCronJobDefinition()
     {
-        return PROPERTIES;
+        return CronJobDefinition.newBuilder()
+                                .id(DownloadRemoteFeedCronJob.class.getCanonicalName())
+                                .name("Download Remote Feed Cron Job")
+                                .description("Download Remote Feed Cron Job")
+                                .fields(FIELDS)
+                                .build();
     }
 
-    @Override
-    public String getName()
-    {
-        return "Download Remote Feed Cron Job";
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "Download Remote Feed Cron Job";
-    }
 
     public static boolean shouldDownloadRemoteRepositoryFeed()
     {

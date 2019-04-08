@@ -1,17 +1,17 @@
 package org.carlspring.strongbox.cron.jobs;
 
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.properties.CronJobNamedProperty;
-import org.carlspring.strongbox.cron.jobs.properties.CronJobProperty;
-import org.carlspring.strongbox.cron.jobs.properties.CronJobRequiredProperty;
-import org.carlspring.strongbox.cron.jobs.properties.CronJobStringTypeProperty;
+import org.carlspring.strongbox.cron.jobs.fields.CronJobField;
+import org.carlspring.strongbox.cron.jobs.fields.CronJobNamedField;
+import org.carlspring.strongbox.cron.jobs.fields.CronJobRequiredField;
+import org.carlspring.strongbox.cron.jobs.fields.CronJobStringTypeField;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import com.google.common.collect.ImmutableSet;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
@@ -26,9 +26,8 @@ public class GroovyCronJob
 
     private static final String PATH_PROPERTY = "script.path";
 
-    private static final List<CronJobProperty> PROPERTIES = Arrays.asList(
-            new CronJobProperty[]{ new CronJobStringTypeProperty(
-                    new CronJobRequiredProperty(new CronJobNamedProperty(PATH_PROPERTY))) });
+    private static final Set<CronJobField> FIELDS = ImmutableSet.of(new CronJobStringTypeField(
+            new CronJobRequiredField(new CronJobNamedField(PATH_PROPERTY))));
 
     @Override
     @SuppressFBWarnings(value = "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
@@ -50,21 +49,14 @@ public class GroovyCronJob
     }
 
     @Override
-    public List<CronJobProperty> getProperties()
+    public CronJobDefinition getCronJobDefinition()
     {
-        return PROPERTIES;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Groovy Cron Job";
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "Groovy Cron Job";
+        return CronJobDefinition.newBuilder()
+                                .id(GroovyCronJob.class.getCanonicalName())
+                                .name("Groovy Cron Job")
+                                .description("Groovy Cron Job")
+                                .fields(FIELDS)
+                                .build();
     }
 
     public String getScriptPath(CronTaskConfigurationDto configuration)

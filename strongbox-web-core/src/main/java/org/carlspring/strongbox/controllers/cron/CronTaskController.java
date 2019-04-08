@@ -5,29 +5,26 @@ import org.carlspring.strongbox.controllers.BaseController;
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
 import org.carlspring.strongbox.cron.domain.CronTasksConfigurationDto;
 import org.carlspring.strongbox.cron.domain.GroovyScriptNamesDto;
-import org.carlspring.strongbox.cron.jobs.AbstractCronJob;
+import org.carlspring.strongbox.cron.jobs.CronJobsDefinitionsRegistry;
 import org.carlspring.strongbox.cron.jobs.GroovyCronJob;
 import org.carlspring.strongbox.cron.services.CronJobSchedulerService;
 import org.carlspring.strongbox.cron.services.CronTaskConfigurationService;
 import org.carlspring.strongbox.forms.cron.CronTaskConfigurationForm;
+import org.carlspring.strongbox.forms.cron.CronTaskDefinitionForm;
 import org.carlspring.strongbox.validation.RequestBodyValidationException;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.commons.collections.CollectionUtils;
-import org.reflections.Reflections;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -79,6 +76,9 @@ public class CronTaskController
 
     @Inject
     private CronTaskConfigurationService cronTaskConfigurationService;
+
+    @Inject
+    private CronJobsDefinitionsRegistry cronJobsDefinitionsRegistry;
 
     @Inject
     private CronJobSchedulerService cronJobSchedulerService;
@@ -208,19 +208,48 @@ public class CronTaskController
         return getSuccessfulResponseEntity(SUCCESSFUL_DELETE_CONFIGURATION, acceptHeader);
     }
 
+    @ApiOperation(value = "Used to save a new configuration")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = SUCCESSFUL_SAVE_CONFIGURATION),
+                            @ApiResponse(code = 400, message = FAILED_SAVE_CONFIGURATION) })
+    @PutMapping(value = "/new-way",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = { MediaType.TEXT_PLAIN_VALUE,
+                         MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity createDefinition(@RequestBody @Validated CronTaskDefinitionForm cronTaskDefinitionForm,
+                                              BindingResult bindingResult,
+                                              @RequestHeader(HttpHeaders.ACCEPT) String acceptHeader)
+    {
+        if (bindingResult.hasErrors())
+        {
+            throw new RequestBodyValidationException(FAILED_SAVE_CONFIGURATION, bindingResult);
+        }
+
+        try
+        {
+            /*
+            CronTaskConfigurationDto cronTaskConfiguration = conversionService.convert(cronTaskConfigurationForm,
+                                                                                       CronTaskConfigurationDto.class);
+            cronTaskConfigurationService.saveConfiguration(cronTaskConfiguration);
+*/
+            return getSuccessfulResponseEntity(SUCCESSFUL_SAVE_CONFIGURATION, acceptHeader);
+        }
+        catch (Exception e)
+        {
+            return getExceptionResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR,
+                                              FAILED_SAVE_CONFIGURATION,
+                                              e,
+                                              acceptHeader);
+        }
+    }
+
     @ApiOperation(value = "Lists all of the cron task types and the field types of those tasks.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = SUCCESSFUL_GET_CONFIGURATION),
-                            @ApiResponse(code = 404, message = NOT_FOUND_CONFIGURATION)})
+                            @ApiResponse(code = 404, message = NOT_FOUND_CONFIGURATION) })
     @GetMapping(value = "/types/list",
-            produces = { MediaType.APPLICATION_JSON_VALUE,
-                         MediaType.APPLICATION_XML_VALUE })
-    public ResponseEntity listCronJobs(@RequestHeader(HttpHeaders.ACCEPT) String acceptHeader)
+            produces = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity listCronJobs()
     {
-        Set<Class<? extends AbstractCronJob>> cronJobs = new Reflections("org.carlspring.strongbox").getSubTypesOf(
-                AbstractCronJob.class).stream().filter(
-                c -> !Modifier.isAbstract(c.getModifiers()) && !c.isInterface()).collect(Collectors.toSet());
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(cronJobsDefinitionsRegistry.getCronJobDefinitions());
     }
 
     @ApiOperation(value = "Used to get the configuration on given cron task UUID")

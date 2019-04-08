@@ -2,7 +2,7 @@ package org.carlspring.strongbox.cron.jobs;
 
 import org.carlspring.strongbox.config.MavenIndexerEnabledCondition;
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.properties.*;
+import org.carlspring.strongbox.cron.jobs.fields.*;
 import org.carlspring.strongbox.providers.io.RepositoryPath;
 import org.carlspring.strongbox.providers.io.RepositoryPathResolver;
 import org.carlspring.strongbox.providers.layout.LayoutProviderRegistry;
@@ -11,9 +11,9 @@ import org.carlspring.strongbox.storage.Storage;
 import org.carlspring.strongbox.storage.repository.Repository;
 
 import javax.inject.Inject;
-import java.util.List;
+import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import com.google.common.collect.ImmutableSet;
 import org.springframework.core.env.Environment;
 
 /**
@@ -29,13 +29,13 @@ public class RebuildMavenIndexesCronJob
 
     private static final String PROPERTY_BASE_PATH = "basePath";
 
-    private static final List<CronJobProperty> PROPERTIES = Arrays.asList(new CronJobProperty[]{
-            new CronJobStorageIdAutocompleteProperty(new CronJobStringTypeProperty(
-                    new CronJobRequiredProperty(new CronJobNamedProperty(PROPERTY_STORAGE_ID)))),
-            new CronJobRepositoryIdAutocompleteProperty(new CronJobStringTypeProperty(
-                    new CronJobRequiredProperty(new CronJobNamedProperty(PROPERTY_REPOSITORY_ID)))),
-            new CronJobStringTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_BASE_PATH))) });
+    private static final Set<CronJobField> FIELDS = ImmutableSet.of(
+            new CronJobStorageIdAutocompleteField(new CronJobStringTypeField(
+                    new CronJobRequiredField(new CronJobNamedField(PROPERTY_STORAGE_ID)))),
+            new CronJobRepositoryIdAutocompleteField(new CronJobStringTypeField(
+                    new CronJobRequiredField(new CronJobNamedField(PROPERTY_REPOSITORY_ID)))),
+            new CronJobStringTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_BASE_PATH))));
 
     @Inject
     private ArtifactIndexesService artifactIndexesService;
@@ -76,21 +76,14 @@ public class RebuildMavenIndexesCronJob
     }
 
     @Override
-    public List<CronJobProperty> getProperties()
+    public CronJobDefinition getCronJobDefinition()
     {
-        return PROPERTIES;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Rebuild Maven Indexes Cron Job";
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "Rebuild Maven Indexes Cron Job";
+        return CronJobDefinition.newBuilder()
+                                .id(RebuildMavenIndexesCronJob.class.getCanonicalName())
+                                .name("Rebuild Maven Indexes Cron Job")
+                                .description("Rebuild Maven Indexes Cron Job")
+                                .fields(FIELDS)
+                                .build();
     }
 
 }

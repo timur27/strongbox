@@ -2,17 +2,17 @@ package org.carlspring.strongbox.cron.jobs;
 
 import org.carlspring.strongbox.configuration.ConfigurationManager;
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.properties.*;
+import org.carlspring.strongbox.cron.jobs.fields.*;
 import org.carlspring.strongbox.services.ChecksumService;
 import org.carlspring.strongbox.storage.Storage;
 import org.carlspring.strongbox.storage.repository.Repository;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author Kate Novik.
@@ -29,15 +29,15 @@ public class RegenerateChecksumCronJob
 
     private static final String PROPERTY_FORCE_REGENERATION = "forceRegeneration";
 
-    private static final List<CronJobProperty> PROPERTIES = Arrays.asList(new CronJobProperty[]{
-            new CronJobStorageIdAutocompleteProperty(new CronJobStringTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_STORAGE_ID)))),
-            new CronJobRepositoryIdAutocompleteProperty(new CronJobStringTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_REPOSITORY_ID)))),
-            new CronJobBooleanTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_FORCE_REGENERATION))),
-            new CronJobStringTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_BASE_PATH))) });
+    private static final Set<CronJobField> FIELDS = ImmutableSet.of(
+            new CronJobStorageIdAutocompleteField(new CronJobStringTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_STORAGE_ID)))),
+            new CronJobRepositoryIdAutocompleteField(new CronJobStringTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_REPOSITORY_ID)))),
+            new CronJobBooleanTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_FORCE_REGENERATION))),
+            new CronJobStringTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_BASE_PATH))));
 
     @Inject
     private ChecksumService checksumService;
@@ -79,21 +79,14 @@ public class RegenerateChecksumCronJob
     }
 
     @Override
-    public List<CronJobProperty> getProperties()
+    public CronJobDefinition getCronJobDefinition()
     {
-        return PROPERTIES;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Regenerate Checksum Cron Job";
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "Regenerate Checksum Cron Job";
+        return CronJobDefinition.newBuilder()
+                                .id(RegenerateChecksumCronJob.class.getCanonicalName())
+                                .name("Regenerate Checksum Cron Job")
+                                .description("Regenerate Checksum Cron Job")
+                                .fields(FIELDS)
+                                .build();
     }
 
     /**

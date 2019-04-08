@@ -2,16 +2,15 @@ package org.carlspring.strongbox.cron.jobs;
 
 import org.carlspring.strongbox.cron.CronJobStatusEnum;
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.properties.CronJobProperty;
 import org.carlspring.strongbox.cron.services.CronTaskConfigurationService;
 import org.carlspring.strongbox.cron.services.JobManager;
 import org.carlspring.strongbox.event.cron.CronTaskEventListenerRegistry;
 
 import javax.inject.Inject;
 
-import java.util.List;
-
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.InterruptableJob;
+import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -44,16 +43,16 @@ public abstract class AbstractCronJob
     private String status = CronJobStatusEnum.SLEEPING.getStatus();
 
     public abstract void executeTask(CronTaskConfigurationDto config)
-        throws Throwable;
+            throws Throwable;
 
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext)
     {
 
         String jobKey = jobExecutionContext.getJobDetail().getKey().getName();
-        
+
         CronTaskConfigurationDto configuration = cronTaskConfigurationService.getTaskConfigurationDto(jobKey);
-        
+
         if (configuration == null)
         {
             configuration = (CronTaskConfigurationDto) jobExecutionContext.getJobDetail().getJobDataMap().get("config");
@@ -114,10 +113,6 @@ public abstract class AbstractCronJob
         this.status = status;
     }
 
-    public abstract List<CronJobProperty> getProperties();
-
-    public abstract String getName();
-
-    public abstract String getDescription();
+    public abstract CronJobDefinition getCronJobDefinition();
 
 }

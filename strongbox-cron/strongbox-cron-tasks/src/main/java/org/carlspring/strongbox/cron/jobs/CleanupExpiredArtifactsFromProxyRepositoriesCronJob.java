@@ -1,13 +1,13 @@
 package org.carlspring.strongbox.cron.jobs;
 
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.properties.*;
+import org.carlspring.strongbox.cron.jobs.fields.*;
 import org.carlspring.strongbox.providers.repository.proxied.LocalStorageProxyRepositoryExpiredArtifactsCleaner;
 
 import javax.inject.Inject;
-import java.util.List;
+import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author Przemyslaw Fusik
@@ -20,11 +20,11 @@ public class CleanupExpiredArtifactsFromProxyRepositoriesCronJob
 
     private static final String PROPERTY_MIN_SIZE_IN_BYTES = "minSizeInBytes";
 
-    private static final List<CronJobProperty> PROPERTIES = Arrays.asList(new CronJobProperty[]{
-            new CronJobIntegerTypeProperty(
-                    new CronJobRequiredProperty(new CronJobNamedProperty(PROPERTY_LAST_ACCESSED_TIME_IN_DAYS))),
-            new CronJobIntegerTypeProperty(
-                    new CronJobOptionalProperty(new CronJobNamedProperty(PROPERTY_MIN_SIZE_IN_BYTES))) });
+    private static final Set<CronJobField> FIELDS = ImmutableSet.of(
+            new CronJobIntegerTypeField(
+                    new CronJobRequiredField(new CronJobNamedField(PROPERTY_LAST_ACCESSED_TIME_IN_DAYS))),
+            new CronJobIntegerTypeField(
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_MIN_SIZE_IN_BYTES))));
 
     @Inject
     private LocalStorageProxyRepositoryExpiredArtifactsCleaner proxyRepositoryObsoleteArtifactsCleaner;
@@ -67,21 +67,14 @@ public class CleanupExpiredArtifactsFromProxyRepositoriesCronJob
     }
 
     @Override
-    public List<CronJobProperty> getProperties()
+    public CronJobDefinition getCronJobDefinition()
     {
-        return PROPERTIES;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Cleanup Expired Artifacts From Proxy Repositories Cron Job";
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "Cleanup Expired Artifacts From Proxy Repositories Cron Job";
+        return CronJobDefinition.newBuilder()
+                                .id(CleanupExpiredArtifactsFromProxyRepositoriesCronJob.class.getCanonicalName())
+                                .name("Cleanup Expired Artifacts From Proxy Repositories Cron Job")
+                                .description("Cleanup Expired Artifacts From Proxy Repositories Cron Job")
+                                .fields(FIELDS)
+                                .build();
     }
 
 }

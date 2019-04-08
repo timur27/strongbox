@@ -1,10 +1,8 @@
 package org.carlspring.strongbox.cron.jobs;
 
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.properties.CronJobProperty;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -19,7 +17,6 @@ public class OneTimeExecutionCronJob
 
     @Override
     public void executeTask(CronTaskConfigurationDto config)
-            throws Throwable
     {
         System.out.println("The one-time task has run " + runs + " times.");
 
@@ -29,26 +26,14 @@ public class OneTimeExecutionCronJob
     }
 
     @Override
-    public List<CronJobProperty> getProperties()
+    public CronJobDefinition getCronJobDefinition()
     {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public String getName()
-    {
-        return "One Time Execution Cron Job";
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "One Time Execution Cron Job";
-    }
-
-    public int getRuns()
-    {
-        return runs;
+        return CronJobDefinition.newBuilder()
+                                .id(OneTimeExecutionCronJob.class.getCanonicalName())
+                                .name("One Time Execution Cron Job")
+                                .description("One Time Execution Cron Job")
+                                .fields(Collections.emptySet())
+                                .build();
     }
 
 }
