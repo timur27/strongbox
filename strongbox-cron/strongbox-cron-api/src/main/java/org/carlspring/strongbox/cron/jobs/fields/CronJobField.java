@@ -1,6 +1,7 @@
 package org.carlspring.strongbox.cron.jobs.fields;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.util.Assert;
 
 /**
  * @author Przemyslaw Fusik
@@ -23,5 +24,31 @@ public abstract class CronJobField
     protected CronJobField getField()
     {
         return field;
+    }
+
+    public boolean isRequired()
+    {
+        return field != null && field.isRequired();
+    }
+
+    public String getName()
+    {
+        Assert.notNull(field, () -> String.format("Field %s does not have name", field));
+        return field.getName();
+    }
+
+    public String getType()
+    {
+        Assert.notNull(field, () -> String.format("Field %s does not have type", field));
+        return field.getType();
+    }
+
+    public String getAutocompleteValue()
+    {
+        if (field == null)
+        {
+            return null;
+        }
+        return field.getAutocompleteValue();
     }
 }

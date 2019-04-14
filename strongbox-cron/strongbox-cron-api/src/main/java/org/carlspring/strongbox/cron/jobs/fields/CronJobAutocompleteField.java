@@ -23,4 +23,9 @@ public abstract class CronJobAutocompleteField
         return "autocomplete";
     }
 
+    @Override
+    public String getAutocompleteValue()
+    {
+        return getValue();
+    }
 }

@@ -22,4 +22,10 @@ public abstract class CronJobTypeField
     {
         return "type";
     }
+
+    @Override
+    public String getType()
+    {
+        return getValue();
+    }
 }

@@ -3,9 +3,13 @@ package org.carlspring.strongbox.controllers.cron;
 import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
 import org.carlspring.strongbox.cron.domain.CronTasksConfigurationDto;
+import org.carlspring.strongbox.cron.jobs.CleanupExpiredArtifactsFromProxyRepositoriesCronJob;
 import org.carlspring.strongbox.cron.jobs.MyTask;
+import org.carlspring.strongbox.cron.jobs.RebuildMavenMetadataCronJob;
+import org.carlspring.strongbox.cron.jobs.RegenerateChecksumCronJob;
 import org.carlspring.strongbox.forms.cron.CronTaskConfigurationForm;
 import org.carlspring.strongbox.forms.cron.CronTaskDefinitionForm;
+import org.carlspring.strongbox.forms.cron.CronTaskDefinitionFormField;
 import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
 
 import java.io.File;
@@ -14,6 +18,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,11 +28,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.carlspring.strongbox.controllers.cron.CronTaskController.CRON_CONFIG_FILE_NAME_KEY;
 import static org.carlspring.strongbox.controllers.cron.CronTaskController.CRON_CONFIG_JOB_CLASS_KEY;
 import static org.carlspring.strongbox.net.MediaType.APPLICATION_YAML_VALUE;
 import static org.carlspring.strongbox.rest.client.RestAssuredArtifactClient.OK;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -160,9 +167,102 @@ public class CronTaskControllerTest
                .body(cronTaskDefinitionForm)
                .when()
                .put(getContextBaseUrl() + "/new-way")
-               .peek();
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem("Cron job not found")))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("id")));
     }
 
+    @Test
+    public void shouldRequireRequiredFields()
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setId(CleanupExpiredArtifactsFromProxyRepositoriesCronJob.class.getCanonicalName());
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
+                       Arrays.asList(new String[]{ "Required field",
+                                                   "not provided" })))))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("fields")));
+    }
+
+    @Test
+    public void valueShouldBeProvidedForRequiredField()
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setId(RebuildMavenMetadataCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setFields(
+                Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
+                        "repositoryId").value("").build() }));
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
+                       Arrays.asList(
+                               new String[]{ "Required field value [repositoryId] not provided" })))))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("fields[0].value")));
+    }
+
+    @Test
+    public void shouldValidateIntTypeFields()
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setId(CleanupExpiredArtifactsFromProxyRepositoriesCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setFields(
+                Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
+                        "lastAccessedTimeInDays").value("piecdziesiat").build() }));
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
+                       Arrays.asList(
+                               new String[]{ "Invalid value [piecdziesiat] type provided. [int] was expected." })))))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("fields[0].value")));
+    }
+
+    @Test
+    public void shouldValidateBooleanTypeFields()
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setId(RegenerateChecksumCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setFields(
+                Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
+                        "forceRegeneration").value("prawda").build() }));
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
+                       Arrays.asList(
+                               new String[]{ "Invalid value [prawda] type provided. [boolean] was expected." })))))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("fields[0].value")));
+    }
 
     @Test
     public void testGroovyCronTaskConfiguration()

@@ -35,4 +35,10 @@ public class CronJobNamedField
     {
         return name;
     }
+
+    @Override
+    public String getName()
+    {
+        return getValue();
+    }
 }

@@ -31,4 +31,10 @@ public class CronJobRequiredField
     {
         return String.valueOf(true);
     }
+
+    @Override
+    public boolean isRequired()
+    {
+        return true;
+    }
 }

@@ -2,7 +2,11 @@ package org.carlspring.strongbox.forms.cron;
 
 import org.carlspring.strongbox.validation.cron.CronTaskDefinitionFormValid;
 
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.ObjectUtils;
+
 
 /**
  * @author Przemyslaw Fusik
@@ -13,7 +17,7 @@ public class CronTaskDefinitionForm
 
     private String id;
 
-    private Set<CronTaskDefinitionFormField> fields;
+    private List<CronTaskDefinitionFormField> fields;
 
     public String getId()
     {
@@ -25,12 +29,12 @@ public class CronTaskDefinitionForm
         this.id = id;
     }
 
-    public Set<CronTaskDefinitionFormField> getFields()
+    public List<CronTaskDefinitionFormField> getFields()
     {
-        return fields;
+        return ObjectUtils.defaultIfNull(fields, Collections.emptyList());
     }
 
-    public void setFields(Set<CronTaskDefinitionFormField> fields)
+    public void setFields(List<CronTaskDefinitionFormField> fields)
     {
         this.fields = fields;
     }
