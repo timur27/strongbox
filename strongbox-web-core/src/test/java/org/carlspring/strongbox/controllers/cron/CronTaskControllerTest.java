@@ -3,10 +3,7 @@ package org.carlspring.strongbox.controllers.cron;
 import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
 import org.carlspring.strongbox.cron.domain.CronTasksConfigurationDto;
-import org.carlspring.strongbox.cron.jobs.CleanupExpiredArtifactsFromProxyRepositoriesCronJob;
-import org.carlspring.strongbox.cron.jobs.MyTask;
-import org.carlspring.strongbox.cron.jobs.RebuildMavenMetadataCronJob;
-import org.carlspring.strongbox.cron.jobs.RegenerateChecksumCronJob;
+import org.carlspring.strongbox.cron.jobs.*;
 import org.carlspring.strongbox.forms.cron.CronTaskConfigurationForm;
 import org.carlspring.strongbox.forms.cron.CronTaskDefinitionForm;
 import org.carlspring.strongbox.forms.cron.CronTaskDefinitionFormField;
@@ -198,7 +195,7 @@ public class CronTaskControllerTest
     public void valueShouldBeProvidedForRequiredField()
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
-        cronTaskDefinitionForm.setId(RebuildMavenMetadataCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setId(RebuildMavenIndexesCronJob.class.getCanonicalName());
         cronTaskDefinitionForm.setFields(
                 Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
                         "repositoryId").value("").build() }));
@@ -215,6 +212,54 @@ public class CronTaskControllerTest
                .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
                        Arrays.asList(
                                new String[]{ "Required field value [repositoryId] not provided" })))))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("fields[0].value")));
+    }
+
+    @Test
+    public void repositoryIdShouldBeAutocompletablyValidated()
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setId(RebuildMavenMetadataCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setFields(
+                Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
+                        "repositoryId").value("mummy").build() }));
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
+                       Arrays.asList(
+                               new String[]{ "Invalid value [mummy] provided. Possible values do not contain this value." })))))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("fields[0].value")));
+    }
+
+    @Test
+    public void storageIdIdShouldBeAutocompletablyValidated()
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setId(RebuildMavenMetadataCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setFields(
+                Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
+                        "storageId").value("mummy").build() }));
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
+                       Arrays.asList(
+                               new String[]{ "Invalid value [mummy] provided. Possible values do not contain this value." })))))
                .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("fields[0].value")));
     }
 

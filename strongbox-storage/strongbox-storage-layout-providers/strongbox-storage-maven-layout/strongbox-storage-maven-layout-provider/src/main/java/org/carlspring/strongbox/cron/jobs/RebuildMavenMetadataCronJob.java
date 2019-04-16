@@ -34,7 +34,7 @@ public class RebuildMavenMetadataCronJob
             new CronJobStorageIdAutocompleteField(new CronJobStringTypeField(
                     new CronJobOptionalField(new CronJobNamedField(PROPERTY_STORAGE_ID)))),
             new CronJobRepositoryIdAutocompleteField(new CronJobStringTypeField(
-                    new CronJobRequiredField(new CronJobNamedField(PROPERTY_REPOSITORY_ID)))),
+                    new CronJobOptionalField(new CronJobNamedField(PROPERTY_REPOSITORY_ID)))),
             new CronJobStringTypeField(
                     new CronJobOptionalField(new CronJobNamedField(PROPERTY_BASE_PATH))));
 

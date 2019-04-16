@@ -5,6 +5,7 @@ import org.carlspring.strongbox.cron.jobs.CronJobsDefinitionsRegistry;
 import org.carlspring.strongbox.cron.jobs.fields.CronJobField;
 import org.carlspring.strongbox.forms.cron.CronTaskDefinitionForm;
 import org.carlspring.strongbox.forms.cron.CronTaskDefinitionFormField;
+import org.carlspring.strongbox.validation.cron.autocomplete.CronTaskDefinitionFormFieldAutocompleteValidator;
 import org.carlspring.strongbox.validation.cron.autocomplete.CronTaskDefinitionFormFieldAutocompleteValidatorsRegistry;
 import org.carlspring.strongbox.validation.cron.type.CronTaskDefinitionFormFieldTypeValidator;
 import org.carlspring.strongbox.validation.cron.type.CronTaskDefinitionFormFieldTypeValidatorsRegistry;
@@ -121,10 +122,20 @@ public class CronTaskDefinitionFormValidator
             String autocompleteValue = definitionField.getAutocompleteValue();
             if (autocompleteValue != null)
             {
-                cronTaskDefinitionFormFieldAutocompleteValidatorsRegistry.get(autocompleteValue);
+                CronTaskDefinitionFormFieldAutocompleteValidator cronTaskDefinitionFormFieldAutocompleteValidator = cronTaskDefinitionFormFieldAutocompleteValidatorsRegistry.get(
+                        autocompleteValue);
+                if (!cronTaskDefinitionFormFieldAutocompleteValidator.isValid(formFieldValue))
+                {
+                    context.buildConstraintViolationWithTemplate(
+                            String.format("Invalid value [%s] provided. Possible values do not contain this value.",
+                                          formFieldValue))
+                           .addPropertyNode("fields")
+                           .addPropertyNode("value")
+                           .inIterable().atIndex(correspondingFormFieldIndex)
+                           .addConstraintViolation();
+                    return false;
+                }
             }
-
-            // TODO validate composite autocomplete
         }
 
         return true;
