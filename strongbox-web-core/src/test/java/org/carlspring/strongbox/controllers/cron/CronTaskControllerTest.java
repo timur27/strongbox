@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.apache.commons.io.IOUtils;
@@ -155,9 +156,12 @@ public class CronTaskControllerTest
 
     @Test
     public void shouldReturnInvalidIdValidationError()
+            throws JsonProcessingException
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId("mummy");
+
+        System.out.println(objectMapper.writeValueAsString(cronTaskDefinitionForm));
 
         given().contentType(MediaType.APPLICATION_JSON_VALUE)
                .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -173,9 +177,12 @@ public class CronTaskControllerTest
 
     @Test
     public void shouldRequireRequiredFields()
+            throws JsonProcessingException
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId(CleanupExpiredArtifactsFromProxyRepositoriesCronJob.class.getCanonicalName());
+
+        System.out.println(objectMapper.writeValueAsString(cronTaskDefinitionForm));
 
         given().contentType(MediaType.APPLICATION_JSON_VALUE)
                .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -193,12 +200,17 @@ public class CronTaskControllerTest
 
     @Test
     public void valueShouldBeProvidedForRequiredField()
+            throws JsonProcessingException
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId(RebuildMavenIndexesCronJob.class.getCanonicalName());
-        cronTaskDefinitionForm.setFields(
-                Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
-                        "repositoryId").value("").build() }));
+        cronTaskDefinitionForm.setFields(Arrays.asList(
+                new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name("storageId").value(
+                        "storage0").build(),
+                                                   CronTaskDefinitionFormField.newBuilder().name("repositoryId").value(
+                                                           "").build() }));
+
+        System.out.println(objectMapper.writeValueAsString(cronTaskDefinitionForm));
 
         given().contentType(MediaType.APPLICATION_JSON_VALUE)
                .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -212,7 +224,7 @@ public class CronTaskControllerTest
                .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
                        Arrays.asList(
                                new String[]{ "Required field value [repositoryId] not provided" })))))
-               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("fields[0].value")));
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("fields[1].value")));
     }
 
     @Test
@@ -241,12 +253,15 @@ public class CronTaskControllerTest
 
     @Test
     public void storageIdIdShouldBeAutocompletablyValidated()
+            throws JsonProcessingException
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId(RebuildMavenMetadataCronJob.class.getCanonicalName());
         cronTaskDefinitionForm.setFields(
                 Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
                         "storageId").value("mummy").build() }));
+
+        System.out.println(objectMapper.writeValueAsString(cronTaskDefinitionForm));
 
         given().contentType(MediaType.APPLICATION_JSON_VALUE)
                .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -288,12 +303,15 @@ public class CronTaskControllerTest
 
     @Test
     public void shouldValidateBooleanTypeFields()
+            throws JsonProcessingException
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId(RegenerateChecksumCronJob.class.getCanonicalName());
         cronTaskDefinitionForm.setFields(
                 Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
                         "forceRegeneration").value("prawda").build() }));
+
+        System.out.println(objectMapper.writeValueAsString(cronTaskDefinitionForm));
 
         given().contentType(MediaType.APPLICATION_JSON_VALUE)
                .accept(MediaType.APPLICATION_JSON_VALUE)

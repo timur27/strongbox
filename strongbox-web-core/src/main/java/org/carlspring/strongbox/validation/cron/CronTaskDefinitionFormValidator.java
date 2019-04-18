@@ -48,6 +48,7 @@ public class CronTaskDefinitionFormValidator
             return false;
         }
 
+        boolean isValid = true;
         for (CronJobField definitionField : cronJobDefinition.getFields())
         {
             String definitionFieldName = definitionField.getName();
@@ -74,7 +75,8 @@ public class CronTaskDefinitionFormValidator
                             String.format("Required field [%s] not provided", definitionFieldName))
                            .addPropertyNode("fields")
                            .addConstraintViolation();
-                    return false;
+                    isValid = false;
+                    continue;
                 }
             }
 
@@ -86,7 +88,7 @@ public class CronTaskDefinitionFormValidator
                             String.format("Required field [%s] not provided", definitionFieldName))
                            .addPropertyNode("fields")
                            .addConstraintViolation();
-                    return false;
+                    isValid = false;
                 }
                 // field is not required and is not provided
                 continue;
@@ -101,7 +103,8 @@ public class CronTaskDefinitionFormValidator
                        .addPropertyNode("value")
                        .inIterable().atIndex(correspondingFormFieldIndex)
                        .addConstraintViolation();
-                return false;
+                isValid = false;
+                continue;
             }
 
             String definitionFieldType = definitionField.getType();
@@ -116,7 +119,8 @@ public class CronTaskDefinitionFormValidator
                        .addPropertyNode("value")
                        .inIterable().atIndex(correspondingFormFieldIndex)
                        .addConstraintViolation();
-                return false;
+                isValid = false;
+                continue;
             }
 
             String autocompleteValue = definitionField.getAutocompleteValue();
@@ -133,12 +137,13 @@ public class CronTaskDefinitionFormValidator
                            .addPropertyNode("value")
                            .inIterable().atIndex(correspondingFormFieldIndex)
                            .addConstraintViolation();
-                    return false;
+                    isValid = false;
+                    continue;
                 }
             }
         }
 
-        return true;
+        return isValid;
     }
 
     private CronJobDefinition getCorrespondingCronJobDefinition(CronTaskDefinitionForm form,
