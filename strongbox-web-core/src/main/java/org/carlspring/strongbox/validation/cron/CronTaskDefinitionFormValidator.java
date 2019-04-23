@@ -16,6 +16,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.CronExpression;
 
 /**
  * @author Przemyslaw Fusik
@@ -49,6 +50,39 @@ public class CronTaskDefinitionFormValidator
         }
 
         boolean isValid = true;
+        boolean cronExpressionIsValid = true;
+
+        if (form.isImmediateExecution() &&
+            form.isOneTimeExecution() &&
+            StringUtils.isNotBlank(form.getCronExpression()))
+        {
+            context.buildConstraintViolationWithTemplate(
+                    "Cron expression should not be provided when both immediateExecution and oneTimeExecution are set to true")
+                   .addPropertyNode("cronExpression")
+                   .addConstraintViolation();
+            isValid = false;
+            cronExpressionIsValid = false;
+        }
+
+        if (cronExpressionIsValid && StringUtils.isBlank(form.getCronExpression()))
+        {
+            context.buildConstraintViolationWithTemplate(
+                    "Cron expression is required")
+                   .addPropertyNode("cronExpression")
+                   .addConstraintViolation();
+            isValid = false;
+            cronExpressionIsValid = false;
+        }
+
+        if (cronExpressionIsValid && !CronExpression.isValidExpression(form.getCronExpression()))
+        {
+            context.buildConstraintViolationWithTemplate(
+                    "Cron expression is invalid")
+                   .addPropertyNode("cronExpression")
+                   .addConstraintViolation();
+            isValid = false;
+        }
+
         for (CronJobField definitionField : cronJobDefinition.getFields())
         {
             String definitionFieldName = definitionField.getName();
@@ -66,20 +100,6 @@ public class CronTaskDefinitionFormValidator
                     break;
                 }
             }
-
-            if (definitionField.isRequired())
-            {
-                if (correspondingFormField == null)
-                {
-                    context.buildConstraintViolationWithTemplate(
-                            String.format("Required field [%s] not provided", definitionFieldName))
-                           .addPropertyNode("fields")
-                           .addConstraintViolation();
-                    isValid = false;
-                    continue;
-                }
-            }
-
             if (correspondingFormField == null)
             {
                 if (definitionField.isRequired())

@@ -181,6 +181,7 @@ public class CronTaskControllerTest
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId(CleanupExpiredArtifactsFromProxyRepositoriesCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setCronExpression("0 11 11 11 11 ? 2100");
 
         System.out.println(objectMapper.writeValueAsString(cronTaskDefinitionForm));
 
@@ -199,11 +200,104 @@ public class CronTaskControllerTest
     }
 
     @Test
+    public void cronExpressionIsRequired()
+            throws JsonProcessingException
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setId(RebuildMavenIndexesCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setFields(Arrays.asList(
+                new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name("storageId").value(
+                        "storage0").build(),
+                                                   CronTaskDefinitionFormField.newBuilder().name("repositoryId").value(
+                                                           "releases").build() }));
+
+        System.out.println(objectMapper.writeValueAsString(cronTaskDefinitionForm));
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
+                       Arrays.asList(
+                               new String[]{ "Cron expression is required" })))))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("cronExpression")));
+    }
+
+    @Test
+    public void cronExpressionIsValidatable()
+            throws JsonProcessingException
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setId(RebuildMavenIndexesCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setCronExpression("daddy");
+        cronTaskDefinitionForm.setFields(Arrays.asList(
+                new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name("storageId").value(
+                        "storage0").build(),
+                                                   CronTaskDefinitionFormField.newBuilder().name("repositoryId").value(
+                                                           "releases").build() }));
+
+        System.out.println(objectMapper.writeValueAsString(cronTaskDefinitionForm));
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
+                       Arrays.asList(
+                               new String[]{ "Cron expression is invalid" })))))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("cronExpression")));
+    }
+
+    @Test
+    public void cronExpressionShouldNotBeProvidedIfOneTimeExecutionAndImmediateExecutionAreSet()
+            throws JsonProcessingException
+    {
+        CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
+        cronTaskDefinitionForm.setFields(Arrays.asList(
+                new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name("storageId").value(
+                        "storage0").build(),
+                                                   CronTaskDefinitionFormField.newBuilder().name("repositoryId").value(
+                                                           "releases").build() }));
+
+        cronTaskDefinitionForm.setId(RebuildMavenIndexesCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setCronExpression("0 11 11 11 11 ? 2100");
+        cronTaskDefinitionForm.setImmediateExecution(true);
+        cronTaskDefinitionForm.setOneTimeExecution(true);
+
+        System.out.println(objectMapper.writeValueAsString(cronTaskDefinitionForm));
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+               .accept(MediaType.APPLICATION_JSON_VALUE)
+               .body(cronTaskDefinitionForm)
+               .when()
+               .put(getContextBaseUrl() + "/new-way")
+               .peek()
+               .then()
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .statusCode(HttpStatus.BAD_REQUEST.value())
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].messages").value(hasItem(stringContainsInOrder(
+                       Arrays.asList(
+                               new String[]{ "Cron expression should not be provided when both immediateExecution and oneTimeExecution are set to true" })))))
+               .expect(MockMvcResultMatchers.jsonPath("errors[0].name").value(equalTo("cronExpression")));
+    }
+
+    @Test
     public void valueShouldBeProvidedForRequiredField()
             throws JsonProcessingException
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId(RebuildMavenIndexesCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setCronExpression("0 11 11 11 11 ? 2100");
         cronTaskDefinitionForm.setFields(Arrays.asList(
                 new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name("storageId").value(
                         "storage0").build(),
@@ -232,6 +326,7 @@ public class CronTaskControllerTest
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId(RebuildMavenMetadataCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setCronExpression("0 11 11 11 11 ? 2100");
         cronTaskDefinitionForm.setFields(
                 Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
                         "repositoryId").value("mummy").build() }));
@@ -257,6 +352,7 @@ public class CronTaskControllerTest
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId(RebuildMavenMetadataCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setCronExpression("0 11 11 11 11 ? 2100");
         cronTaskDefinitionForm.setFields(
                 Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
                         "storageId").value("mummy").build() }));
@@ -307,6 +403,7 @@ public class CronTaskControllerTest
     {
         CronTaskDefinitionForm cronTaskDefinitionForm = new CronTaskDefinitionForm();
         cronTaskDefinitionForm.setId(RegenerateChecksumCronJob.class.getCanonicalName());
+        cronTaskDefinitionForm.setCronExpression("0 11 11 11 11 ? 2100");
         cronTaskDefinitionForm.setFields(
                 Arrays.asList(new CronTaskDefinitionFormField[]{ CronTaskDefinitionFormField.newBuilder().name(
                         "forceRegeneration").value("prawda").build() }));

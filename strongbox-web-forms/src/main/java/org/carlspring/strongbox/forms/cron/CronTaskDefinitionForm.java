@@ -17,6 +17,12 @@ public class CronTaskDefinitionForm
 
     private String id;
 
+    private String cronExpression;
+
+    private boolean oneTimeExecution;
+
+    private boolean immediateExecution;
+
     private List<CronTaskDefinitionFormField> fields;
 
     public String getId()
@@ -37,5 +43,35 @@ public class CronTaskDefinitionForm
     public void setFields(List<CronTaskDefinitionFormField> fields)
     {
         this.fields = fields;
+    }
+
+    public String getCronExpression()
+    {
+        return cronExpression;
+    }
+
+    public void setCronExpression(String cronExpression)
+    {
+        this.cronExpression = cronExpression;
+    }
+
+    public boolean isOneTimeExecution()
+    {
+        return oneTimeExecution;
+    }
+
+    public void setOneTimeExecution(boolean oneTimeExecution)
+    {
+        this.oneTimeExecution = oneTimeExecution;
+    }
+
+    public boolean isImmediateExecution()
+    {
+        return immediateExecution;
+    }
+
+    public void setImmediateExecution(boolean immediateExecution)
+    {
+        this.immediateExecution = immediateExecution;
     }
 }

@@ -53,6 +53,42 @@ public class CronJobSchedulerServiceImpl
                                         .storeDurably()
                                         .build();
 
+        try
+        {
+            scheduler.addJob(jobDetail, true);
+            logger.debug("Job '{}' added to the Scheduler.", cronTaskConfiguration.getUuid());
+        }
+        catch (SchedulerException e)
+        {
+            logger.error(String.format("Failed to add Cron Job [%s] to the Scheduler", cronTaskConfiguration), e);
+            return;
+        }
+
+        boolean scheduleJob = true;
+
+        if (cronTaskConfiguration.shouldExecuteImmediately())
+        {
+            try
+            {
+                scheduler.triggerJob(jobKey);
+                logger.debug("Job '{}' triggered by the Scheduler.", cronTaskConfiguration.getUuid());
+            }
+            catch (SchedulerException e)
+            {
+                logger.error(String.format("Failed to trigger Cron Job [%s] by the Scheduler", cronTaskConfiguration),
+                             e);
+                return;
+            }
+
+            scheduleJob = !cronTaskConfiguration.isOneTimeExecution();
+        }
+
+        if (!scheduleJob)
+        {
+            logger.debug("Job '{}' won't be scheduled based on the cron expression.", cronTaskConfiguration.getUuid());
+            return;
+        }
+
         TriggerKey triggerKey = TriggerKey.triggerKey(cronTaskConfiguration.getUuid());
         TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger()
                                                                .withIdentity(triggerKey)
@@ -64,31 +100,15 @@ public class CronJobSchedulerServiceImpl
 
         try
         {
-            doScheduleJob(cronTaskConfiguration, jobKey, jobDetail, trigger);
+            scheduler.scheduleJob(trigger);
+            logger.debug("Job '{}' scheduled.", cronTaskConfiguration.getUuid());
         }
         catch (SchedulerException e)
         {
-            logger.error(String.format("Failed to add Cron Job:%n [%s]", cronTaskConfiguration), e);
+            logger.error(String.format("Failed to schedule Cron Job:%n [%s]", cronTaskConfiguration), e);
 
             return;
         }
-
-        logger.debug("Job '{}' scheduled.", cronTaskConfiguration.getUuid());
-    }
-
-    private void doScheduleJob(CronTaskConfigurationDto cronTaskConfiguration,
-                               JobKey jobKey,
-                               JobDetail jobDetail,
-                               Trigger trigger)
-        throws SchedulerException
-    {
-        scheduler.addJob(jobDetail, true);
-        if (cronTaskConfiguration.shouldExecuteImmediately())
-        {
-            scheduler.triggerJob(jobKey);
-        }
-
-        scheduler.scheduleJob(trigger);
     }
 
     @Override
