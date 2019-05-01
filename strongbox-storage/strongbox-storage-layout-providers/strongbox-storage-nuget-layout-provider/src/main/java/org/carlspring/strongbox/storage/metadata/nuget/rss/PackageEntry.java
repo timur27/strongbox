@@ -44,7 +44,7 @@ import org.carlspring.strongbox.storage.metadata.nuget.Nuspec;
  */
 @XmlRootElement(name = "entry", namespace = PackageFeed.ATOM_XML_NAMESPACE)
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "jobClass", "title", "summary", "updated", "author", "links",
+@XmlType(propOrder = { "id", "title", "summary", "updated", "author", "links",
                        "category", "content", "properties" })
 public class PackageEntry
 {
@@ -177,9 +177,9 @@ public class PackageEntry
     }
 
     /**
-     * @return attachment jobClass
+     * @return attachment id
      */
-    @XmlElement(name = "jobClass", namespace = PackageFeed.ATOM_XML_NAMESPACE)
+    @XmlElement(name = "id", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     public String getId()
     {
         return getRootUri() + "nuget/Packages(Id='" + getTitle() + "',Version='"
@@ -195,7 +195,7 @@ public class PackageEntry
     }
 
     /**
-     * @return attachment header (package jobClass)
+     * @return attachment header (package id)
      */
     public String getTitle()
     {

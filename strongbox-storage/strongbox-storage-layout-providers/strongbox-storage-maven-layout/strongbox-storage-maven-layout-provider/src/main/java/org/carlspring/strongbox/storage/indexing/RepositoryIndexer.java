@@ -166,7 +166,7 @@ public class RepositoryIndexer
 
         final BooleanQuery booleanQuery = booleanQueryBuiler.build();
 
-        logger.debug("Executing search query: {}; ctx jobClass: {}; idx dir: {}",
+        logger.debug("Executing search query: {}; ctx id: {}; idx dir: {}",
                      new String[]{ booleanQuery.toString(),
                                    indexingContext.getId(),
                                    indexingContext.getIndexDirectory().toString() });
@@ -199,7 +199,7 @@ public class RepositoryIndexer
             final Query query = new MultiFieldQueryParser(luceneFields, luceneAnalyzer).parse(queryText);
 
             logger.debug("Text of the query: {}", queryText);
-            logger.debug("Executing search query: {}; ctx jobClass: {}; idx dir: {}",
+            logger.debug("Executing search query: {}; ctx id: {}; idx dir: {}",
                          new String[]{ query.toString(),
                                        indexingContext.getId(),
                                        indexingContext.getIndexDirectory().toString() });
@@ -248,7 +248,7 @@ public class RepositoryIndexer
 
         final BooleanQuery booleanQuery = booleanQueryBuilder.build();
 
-        logger.debug("Executing search query: {}; ctx jobClass: {}; idx dir: {}",
+        logger.debug("Executing search query: {}; ctx id: {}; idx dir: {}",
                      new String[]{ booleanQuery.toString(),
                                    indexingContext.getId(),
                                    indexingContext.getIndexDirectory().toString() });

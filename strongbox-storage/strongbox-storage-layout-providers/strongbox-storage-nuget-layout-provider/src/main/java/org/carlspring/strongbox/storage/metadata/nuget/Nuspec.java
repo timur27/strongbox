@@ -429,7 +429,7 @@ public class Nuspec implements Serializable
         /**
          * Unique package identifier
          */
-        @XmlElement(name = "jobClass", namespace = NUSPEC_XML_NAMESPACE_2011)
+        @XmlElement(name = "id", namespace = NUSPEC_XML_NAMESPACE_2011)
         public String id;
 
         /**

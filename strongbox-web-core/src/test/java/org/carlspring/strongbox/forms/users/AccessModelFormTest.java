@@ -211,6 +211,6 @@ public class AccessModelFormTest
         // then
         assertFalse(violations.isEmpty(), "Violations are empty!");
         assertEquals(violations.size(), 1);
-        Java6Assertions.assertThat(violations).extracting("message").containsAnyOf("A storage jobClass must be specified.");
+        Java6Assertions.assertThat(violations).extracting("message").containsAnyOf("A storage id must be specified.");
     }
 }

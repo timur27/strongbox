@@ -98,7 +98,7 @@ public class AqlControllerTest extends MavenRestAssuredBaseTest
         throws Exception
     {
         given().accept(MediaType.APPLICATION_JSON_VALUE)
-               .queryParam("query", "layout:unknown-layout+jobClass:org.carlspring.strongbox.*")
+               .queryParam("query", "layout:unknown-layout+id:org.carlspring.strongbox.*")
                .when()
                .get(getContextBaseUrl() + "/api/aql")
                .then()

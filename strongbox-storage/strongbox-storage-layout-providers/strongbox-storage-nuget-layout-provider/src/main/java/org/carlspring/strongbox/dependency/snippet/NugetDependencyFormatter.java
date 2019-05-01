@@ -54,7 +54,7 @@ public class NugetDependencyFormatter
     {
         NugetArtifactCoordinates coordinates = (NugetArtifactCoordinates) artifactCoordinates;
 
-        String sb = "<dependency jobClass=\"" + coordinates.getId() + "\"" +
+        String sb = "<dependency id=\"" + coordinates.getId() + "\"" +
                     " version=\"" + coordinates.getVersion() + "\" />\n";
 
         return sb;

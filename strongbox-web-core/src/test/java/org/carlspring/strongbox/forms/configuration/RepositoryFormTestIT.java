@@ -33,7 +33,7 @@ public class RepositoryFormTestIT
         extends RestAssuredBaseTest
 {
 
-    private static final String ID_VALID = "jobClass";
+    private static final String ID_VALID = "id";
     private static final RepositoryPolicyEnum POLICY_VALID = RepositoryPolicyEnum.RELEASE;
     private static final StorageProviderEnum IMPLEMENTATION_VALID = StorageProviderEnum.FILESYSTEM;
     private static final String LAYOUT_VALID = "Maven 2";
@@ -171,7 +171,7 @@ public class RepositoryFormTestIT
         repositoryForm.setHttpConnectionPool(HTTP_CONNECTION_POOL_VALID);
         repositoryForm.setRepositoryConfiguration(repositoryConfiguration);
 
-        validateAndAssert(repositoryForm, 2, "An jobClass must be specified.");
+        validateAndAssert(repositoryForm, 2, "An id must be specified.");
     }
 
     @Test

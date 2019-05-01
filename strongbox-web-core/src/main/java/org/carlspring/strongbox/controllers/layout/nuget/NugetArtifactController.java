@@ -272,23 +272,23 @@ public class NugetArtifactController extends BaseArtifactController
     @GetMapping(path = { "{storageId}/{repositoryId}/FindPackagesById()" }, produces = MediaType.APPLICATION_XML)
     public ResponseEntity<?> searchPackageById(@PathVariable(name = "storageId") String storageId,
                                                @PathVariable(name = "repositoryId") String repositoryId,
-                                               @RequestParam(name = "jobClass", required = true) String packageId,
+                                               @RequestParam(name = "id", required = true) String packageId,
                                                HttpServletResponse response)
             throws JAXBException, IOException
     {
-        String normalisedPackageId = normaliseSearchTerm(packageId);        
-        
+        String normalisedPackageId = normaliseSearchTerm(packageId);
+
         NugetSearchRequest nugetSearchRequest = new NugetSearchRequest();
         nugetSearchRequest.setFilter(String.format("Id eq '%s'", packageId));
         repositorySearchEventListener.setNugetSearchRequest(nugetSearchRequest);
-        
+
         Repository repository = getRepository(storageId, repositoryId);
         RepositoryProvider provider = repositoryProviderRegistry.getProvider(repository.getType());
 
         Paginator paginator = new Paginator();
         paginator.setProperty("artifactCoordinates.coordinates.version");
 
-        Predicate predicate = Predicate.of(ExpOperator.EQ.of("artifactCoordinates.coordinates.jobClass", normalisedPackageId));
+        Predicate predicate = Predicate.of(ExpOperator.EQ.of("artifactCoordinates.coordinates.id", normalisedPackageId));
 
         Collection<? extends Nupkg> files = searchNupkg(storageId, repositoryId, provider, paginator, predicate);
 
@@ -315,14 +315,14 @@ public class NugetArtifactController extends BaseArtifactController
     {
         Repository repository = getRepository(storageId, repositoryId);
         RepositoryProvider provider = repositoryProviderRegistry.getProvider(repository.getType());
-        
+
         Paginator paginator = new Paginator();
         paginator.setSkip(skip);
         paginator.setLimit(top);
         paginator.setProperty(orderBy);
-        
+
         Predicate rootPredicate = createSearchPredicate(filter, searchTerm);
-        
+
         return searchNupkg(storageId, repositoryId, provider, paginator, rootPredicate);
     }
 
@@ -358,12 +358,12 @@ public class NugetArtifactController extends BaseArtifactController
            NugetODataFilterQueryParser t = new NugetODataFilterQueryParser(filter);
            rootPredicate = t.parseQuery().getPredicate();
         }
-        
+
         rootPredicate.and(Predicate.of(ExpOperator.EQ.of("artifactCoordinates.coordinates.extension", "nupkg")));
-        
-        if (searchTerm != null && !searchTerm.trim().isEmpty()) 
+
+        if (searchTerm != null && !searchTerm.trim().isEmpty())
         {
-            rootPredicate.and(Predicate.of(ExpOperator.LIKE.of("artifactCoordinates.coordinates.jobClass",
+            rootPredicate.and(Predicate.of(ExpOperator.LIKE.of("artifactCoordinates.coordinates.id",
                                                                "%" + searchTerm + "%")));
         }
         return rootPredicate;
