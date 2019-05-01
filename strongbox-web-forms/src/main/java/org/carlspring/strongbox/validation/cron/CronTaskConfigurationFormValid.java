@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = {})
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CronTaskDefinitionFormValid
+public @interface CronTaskConfigurationFormValid
 {
 
     String message();

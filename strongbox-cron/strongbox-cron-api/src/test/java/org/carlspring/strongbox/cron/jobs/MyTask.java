@@ -21,7 +21,7 @@ public class MyTask
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(MyTask.class.getCanonicalName())
+                                .jobClass(MyTask.class.getCanonicalName())
                                 .name("My Task")
                                 .description("My Task")
                                 .fields(Collections.emptySet())

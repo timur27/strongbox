@@ -106,7 +106,7 @@ public class StorageFormTestIT
         // then
         assertFalse(violations.isEmpty(), "Violations are empty!");
         assertEquals(violations.size(), 2);
-        assertThat(violations).extracting("message").containsAnyOf("An id must be specified.");
+        assertThat(violations).extracting("message").containsAnyOf("An jobClass must be specified.");
     }
 
     @Test

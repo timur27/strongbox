@@ -30,7 +30,7 @@ public class NugetArtifactCoordinates
 
     public static final String LAYOUT_ALIAS = "nuget";
     
-    public static final String ID = "id";
+    public static final String ID = "jobClass";
 
     public static final String VERSION = "version";
 
@@ -57,7 +57,7 @@ public class NugetArtifactCoordinates
     }
 
     @Override
-    @XmlAttribute(name="id")
+    @XmlAttribute(name="jobClass")
     @ArtifactLayoutCoordinate
     public String getId()
     {

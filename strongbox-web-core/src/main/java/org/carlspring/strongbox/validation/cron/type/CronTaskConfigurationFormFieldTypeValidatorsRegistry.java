@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
  * @author Przemyslaw Fusik
  */
 @Component
-public class CronTaskDefinitionFormFieldTypeValidatorsRegistry
+public class CronTaskConfigurationFormFieldTypeValidatorsRegistry
 {
 
     @Inject
-    private List<CronTaskDefinitionFormFieldTypeValidator> validators;
+    private List<CronTaskConfigurationFormFieldTypeValidator> validators;
 
-    public CronTaskDefinitionFormFieldTypeValidator get(String type)
+    public CronTaskConfigurationFormFieldTypeValidator get(String type)
     {
         return validators.stream()
                          .filter(v -> v.supports(type))

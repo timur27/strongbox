@@ -78,7 +78,7 @@ public class RebuildMavenMetadataCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(RebuildMavenMetadataCronJob.class.getCanonicalName())
+                                .jobClass(RebuildMavenMetadataCronJob.class.getCanonicalName())
                                 .name("Rebuild Maven Metadata Cron Job")
                                 .description("Rebuild Maven Metadata Cron Job")
                                 .fields(FIELDS)

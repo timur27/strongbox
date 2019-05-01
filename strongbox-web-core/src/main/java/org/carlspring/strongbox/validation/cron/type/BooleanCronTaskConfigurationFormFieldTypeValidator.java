@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
  * @author Przemyslaw Fusik
  */
 @Component
-public class IntCronTaskDefinitionFormFieldTypeValidator
-        implements CronTaskDefinitionFormFieldTypeValidator
+public class BooleanCronTaskConfigurationFormFieldTypeValidator
+        implements CronTaskConfigurationFormFieldTypeValidator
 {
 
     @Override
@@ -19,19 +19,12 @@ public class IntCronTaskDefinitionFormFieldTypeValidator
         {
             return true;
         }
-        try
-        {
-            return Integer.valueOf(value) != null;
-        }
-        catch (NumberFormatException ex)
-        {
-            return false;
-        }
+        return "true".equals(value) || "false".equals(value);
     }
 
     @Override
     public boolean supports(String type)
     {
-        return int.class.getSimpleName().equals(type);
+        return boolean.class.getSimpleName().equals(type);
     }
 }

@@ -51,7 +51,7 @@ public class ClearRepositoryTrashCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(ClearRepositoryTrashCronJob.class.getCanonicalName())
+                                .jobClass(ClearRepositoryTrashCronJob.class.getCanonicalName())
                                 .name("Clear Repository Trash Cron Job")
                                 .description("Clear Repository Trash Cron Job")
                                 .fields(FIELDS)

@@ -79,7 +79,7 @@ public class RebuildMavenIndexesCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(RebuildMavenIndexesCronJob.class.getCanonicalName())
+                                .jobClass(RebuildMavenIndexesCronJob.class.getCanonicalName())
                                 .name("Rebuild Maven Indexes Cron Job")
                                 .description("Rebuild Maven Indexes Cron Job")
                                 .fields(FIELDS)

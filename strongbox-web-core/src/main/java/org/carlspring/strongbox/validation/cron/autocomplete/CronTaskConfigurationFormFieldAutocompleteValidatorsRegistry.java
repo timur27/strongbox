@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
  * @author Przemyslaw Fusik
  */
 @Component
-public class CronTaskDefinitionFormFieldAutocompleteValidatorsRegistry
+public class CronTaskConfigurationFormFieldAutocompleteValidatorsRegistry
 {
 
     @Inject
-    private List<CronTaskDefinitionFormFieldAutocompleteValidator> validators;
+    private List<CronTaskConfigurationFormFieldAutocompleteValidator> validators;
 
-    public CronTaskDefinitionFormFieldAutocompleteValidator get(String autocompleteValue)
+    public CronTaskConfigurationFormFieldAutocompleteValidator get(String autocompleteValue)
     {
         return validators.stream()
                          .filter(v -> v.supports(autocompleteValue))

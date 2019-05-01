@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
  * @author Przemyslaw Fusik
  */
 @Component
-public class CronTaskDefinitionFormFieldStorageIdAutocompleteValidator
-        implements CronTaskDefinitionFormFieldAutocompleteValidator
+public class CronTaskConfigurationFormFieldStorageIdAutocompleteValidator
+        implements CronTaskConfigurationFormFieldAutocompleteValidator
 {
 
     @Inject

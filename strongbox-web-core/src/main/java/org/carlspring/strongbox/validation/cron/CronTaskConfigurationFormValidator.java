@@ -3,12 +3,12 @@ package org.carlspring.strongbox.validation.cron;
 import org.carlspring.strongbox.cron.jobs.CronJobDefinition;
 import org.carlspring.strongbox.cron.jobs.CronJobsDefinitionsRegistry;
 import org.carlspring.strongbox.cron.jobs.fields.CronJobField;
-import org.carlspring.strongbox.forms.cron.CronTaskDefinitionForm;
-import org.carlspring.strongbox.forms.cron.CronTaskDefinitionFormField;
-import org.carlspring.strongbox.validation.cron.autocomplete.CronTaskDefinitionFormFieldAutocompleteValidator;
-import org.carlspring.strongbox.validation.cron.autocomplete.CronTaskDefinitionFormFieldAutocompleteValidatorsRegistry;
-import org.carlspring.strongbox.validation.cron.type.CronTaskDefinitionFormFieldTypeValidator;
-import org.carlspring.strongbox.validation.cron.type.CronTaskDefinitionFormFieldTypeValidatorsRegistry;
+import org.carlspring.strongbox.forms.cron.CronTaskConfigurationForm;
+import org.carlspring.strongbox.forms.cron.CronTaskConfigurationFormField;
+import org.carlspring.strongbox.validation.cron.autocomplete.CronTaskConfigurationFormFieldAutocompleteValidator;
+import org.carlspring.strongbox.validation.cron.autocomplete.CronTaskConfigurationFormFieldAutocompleteValidatorsRegistry;
+import org.carlspring.strongbox.validation.cron.type.CronTaskConfigurationFormFieldTypeValidator;
+import org.carlspring.strongbox.validation.cron.type.CronTaskConfigurationFormFieldTypeValidatorsRegistry;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
@@ -21,21 +21,21 @@ import org.quartz.CronExpression;
 /**
  * @author Przemyslaw Fusik
  */
-public class CronTaskDefinitionFormValidator
-        implements ConstraintValidator<CronTaskDefinitionFormValid, CronTaskDefinitionForm>
+public class CronTaskConfigurationFormValidator
+        implements ConstraintValidator<CronTaskConfigurationFormValid, CronTaskConfigurationForm>
 {
 
     @Inject
     private CronJobsDefinitionsRegistry cronJobsDefinitionsRegistry;
 
     @Inject
-    private CronTaskDefinitionFormFieldTypeValidatorsRegistry cronTaskDefinitionFormFieldTypeValidatorsRegistry;
+    private CronTaskConfigurationFormFieldTypeValidatorsRegistry cronTaskConfigurationFormFieldTypeValidatorsRegistry;
 
     @Inject
-    private CronTaskDefinitionFormFieldAutocompleteValidatorsRegistry cronTaskDefinitionFormFieldAutocompleteValidatorsRegistry;
+    private CronTaskConfigurationFormFieldAutocompleteValidatorsRegistry cronTaskConfigurationFormFieldAutocompleteValidatorsRegistry;
 
     @Override
-    public boolean isValid(CronTaskDefinitionForm form,
+    public boolean isValid(CronTaskConfigurationForm form,
                            ConstraintValidatorContext context)
     {
 
@@ -86,11 +86,11 @@ public class CronTaskDefinitionFormValidator
         for (CronJobField definitionField : cronJobDefinition.getFields())
         {
             String definitionFieldName = definitionField.getName();
-            CronTaskDefinitionFormField correspondingFormField = null;
+            CronTaskConfigurationFormField correspondingFormField = null;
             int correspondingFormFieldIndex = -1;
             for (int i = 0; i < form.getFields().size(); i++)
             {
-                CronTaskDefinitionFormField formField = form.getFields().get(i);
+                CronTaskConfigurationFormField formField = form.getFields().get(i);
 
                 String formFieldName = formField.getName();
                 if (StringUtils.equals(definitionFieldName, formFieldName))
@@ -128,9 +128,9 @@ public class CronTaskDefinitionFormValidator
             }
 
             String definitionFieldType = definitionField.getType();
-            CronTaskDefinitionFormFieldTypeValidator cronTaskDefinitionFormFieldTypeValidator = cronTaskDefinitionFormFieldTypeValidatorsRegistry.get(
+            CronTaskConfigurationFormFieldTypeValidator cronTaskConfigurationFormFieldTypeValidator = cronTaskConfigurationFormFieldTypeValidatorsRegistry.get(
                     definitionFieldType);
-            if (!cronTaskDefinitionFormFieldTypeValidator.isValid(formFieldValue))
+            if (!cronTaskConfigurationFormFieldTypeValidator.isValid(formFieldValue))
             {
                 context.buildConstraintViolationWithTemplate(
                         String.format("Invalid value [%s] type provided. [%s] was expected.", formFieldValue,
@@ -146,9 +146,9 @@ public class CronTaskDefinitionFormValidator
             String autocompleteValue = definitionField.getAutocompleteValue();
             if (autocompleteValue != null)
             {
-                CronTaskDefinitionFormFieldAutocompleteValidator cronTaskDefinitionFormFieldAutocompleteValidator = cronTaskDefinitionFormFieldAutocompleteValidatorsRegistry.get(
+                CronTaskConfigurationFormFieldAutocompleteValidator cronTaskConfigurationFormFieldAutocompleteValidator = cronTaskConfigurationFormFieldAutocompleteValidatorsRegistry.get(
                         autocompleteValue);
-                if (!cronTaskDefinitionFormFieldAutocompleteValidator.isValid(formFieldValue))
+                if (!cronTaskConfigurationFormFieldAutocompleteValidator.isValid(formFieldValue))
                 {
                     context.buildConstraintViolationWithTemplate(
                             String.format("Invalid value [%s] provided. Possible values do not contain this value.",
@@ -161,21 +161,22 @@ public class CronTaskDefinitionFormValidator
                     continue;
                 }
             }
+            // TODO SB-1393
         }
 
         return isValid;
     }
 
-    private CronJobDefinition getCorrespondingCronJobDefinition(CronTaskDefinitionForm form,
+    private CronJobDefinition getCorrespondingCronJobDefinition(CronTaskConfigurationForm form,
                                                                 ConstraintValidatorContext context)
     {
-        String id = StringUtils.trimToEmpty(form.getId());
+        String id = StringUtils.trimToEmpty(form.getJobClass());
         Optional<CronJobDefinition> cronJobDefinition = cronJobsDefinitionsRegistry.get(id);
         return cronJobDefinition.orElseThrow(() ->
                                              {
                                                  context.buildConstraintViolationWithTemplate(
                                                          "Cron job not found")
-                                                        .addPropertyNode("id")
+                                                        .addPropertyNode("jobClass")
                                                         .addConstraintViolation();
                                                  return new CronTaskDefinitionFormValidatorException();
                                              }

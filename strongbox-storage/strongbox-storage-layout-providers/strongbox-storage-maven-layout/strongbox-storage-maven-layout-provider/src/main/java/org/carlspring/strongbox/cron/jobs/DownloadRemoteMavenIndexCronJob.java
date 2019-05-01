@@ -75,7 +75,7 @@ public class DownloadRemoteMavenIndexCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(DownloadRemoteMavenIndexCronJob.class.getCanonicalName())
+                                .jobClass(DownloadRemoteMavenIndexCronJob.class.getCanonicalName())
                                 .name("Download Remote Maven Index Cron Job")
                                 .description("Download Remote Maven Index Cron Job")
                                 .fields(FIELDS)

@@ -12,7 +12,7 @@ import org.springframework.util.Assert;
 public class CronJobDefinition
 {
 
-    private String id;
+    private String jobClass;
 
     private String name;
 
@@ -20,9 +20,9 @@ public class CronJobDefinition
 
     private Set<CronJobField> fields;
 
-    public String getId()
+    public String getJobClass()
     {
-        return id;
+        return jobClass;
     }
 
     public String getName()
@@ -51,19 +51,19 @@ public class CronJobDefinition
 
         CronJobDefinition that = (CronJobDefinition) o;
 
-        return id.equals(that.id);
+        return jobClass.equals(that.jobClass);
     }
 
     @Override
     public int hashCode()
     {
-        return id.hashCode();
+        return jobClass.hashCode();
     }
 
     private CronJobDefinition(Builder builder)
     {
-        Assert.notNull(builder.id, "id should not be null");
-        id = builder.id;
+        Assert.notNull(builder.jobClass, "jobClass should not be null");
+        jobClass = builder.jobClass;
         name = builder.name;
         description = builder.description;
         fields = builder.fields;
@@ -78,7 +78,7 @@ public class CronJobDefinition
     public static final class Builder
     {
 
-        private String id;
+        private String jobClass;
         private String name;
         private String description;
         private Set<CronJobField> fields;
@@ -87,9 +87,9 @@ public class CronJobDefinition
         {
         }
 
-        public Builder id(String val)
+        public Builder jobClass(String val)
         {
-            id = val;
+            jobClass = val;
             return this;
         }
 

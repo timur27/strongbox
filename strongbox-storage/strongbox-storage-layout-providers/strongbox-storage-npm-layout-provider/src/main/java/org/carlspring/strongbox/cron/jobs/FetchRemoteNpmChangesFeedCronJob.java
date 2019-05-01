@@ -62,7 +62,7 @@ public class FetchRemoteNpmChangesFeedCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(FetchRemoteNpmChangesFeedCronJob.class.getCanonicalName())
+                                .jobClass(FetchRemoteNpmChangesFeedCronJob.class.getCanonicalName())
                                 .name("Fetch Remote Npm Changes Feed Cron Job")
                                 .description("Fetch Remote Npm Changes Feed Cron Job")
                                 .fields(FIELDS)

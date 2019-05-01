@@ -70,7 +70,7 @@ public class CleanupExpiredArtifactsFromProxyRepositoriesCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(CleanupExpiredArtifactsFromProxyRepositoriesCronJob.class.getCanonicalName())
+                                .jobClass(CleanupExpiredArtifactsFromProxyRepositoriesCronJob.class.getCanonicalName())
                                 .name("Cleanup Expired Artifacts From Proxy Repositories Cron Job")
                                 .description("Cleanup Expired Artifacts From Proxy Repositories Cron Job")
                                 .fields(FIELDS)

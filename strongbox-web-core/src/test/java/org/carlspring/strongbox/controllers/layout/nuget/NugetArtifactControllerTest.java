@@ -189,7 +189,7 @@ public class NugetArtifactControllerTest extends NugetRestAssuredBaseTest
         given().header("User-Agent", "NuGet/*")
                .when()
                .get(getContextBaseUrl() + "/storages/" + STORAGE_ID + "/" + REPOSITORY_RELEASES_1 +
-                       "/FindPackagesById()?id='Org.Carlspring.Strongbox.Examples.Nuget.Mono'")
+                       "/FindPackagesById()?jobClass='Org.Carlspring.Strongbox.Examples.Nuget.Mono'")
                .then()
                .statusCode(HttpStatus.OK.value())
                .and()
@@ -394,7 +394,7 @@ public class NugetArtifactControllerTest extends NugetRestAssuredBaseTest
     {
         given().header("User-Agent", "NuGet/*")
                .when()
-               .get(getContextBaseUrl() + "/storages/public/nuget-group/FindPackagesById()?id=NHibernate")
+               .get(getContextBaseUrl() + "/storages/public/nuget-group/FindPackagesById()?jobClass=NHibernate")
                .then()
                .statusCode(HttpStatus.OK.value())
                .and()
@@ -405,7 +405,7 @@ public class NugetArtifactControllerTest extends NugetRestAssuredBaseTest
                .body("feed.entry[0].title", equalTo("NHibernate"));
 
         Map<String, String> coordinates = new HashMap<>();
-        coordinates.put("id", "NHibernate");
+        coordinates.put("jobClass", "NHibernate");
         coordinates.put("version", "4.1.1.4000");
 
         List<ArtifactEntry> artifactEntryList = artifactEntryService.findArtifactList("storage-common-proxies", "nuget.org", coordinates, true);
@@ -441,7 +441,7 @@ public class NugetArtifactControllerTest extends NugetRestAssuredBaseTest
                                   .header("User-Agent", "NuGet/*")
                                   .when()
                                   .get(getContextBaseUrl()
-                                          + "/storages/public/nuget-group/FindPackagesById()?id=NHibernate&$orderby=Version")
+                                          + "/storages/public/nuget-group/FindPackagesById()?jobClass=NHibernate&$orderby=Version")
                                   .body()
                                   .as(PackageFeed.class);
 

@@ -61,7 +61,7 @@ public class ReindexArtifactScanningListener
     {
         try
         {
-            logger.debug("Adding artifact: {}; ctx id: {}; idx dir: {}",
+            logger.debug("Adding artifact: {}; ctx jobClass: {}; idx dir: {}",
                          ac.getGav().getGroupId() + ":" +
                          ac.getGav().getArtifactId() + ":" +
                          ac.getGav().getVersion() + ":" +

@@ -85,7 +85,6 @@ public class BaseCronJobWithNugetIndexingTestCase
             throws Exception
     {
         Map<String, String> properties = new LinkedHashMap<>();
-        properties.put("cronExpression", "0 11 11 11 11 ? 2100");
         properties.put("storageId", storageId);
         properties.put("repositoryId", repositoryId);
         if (additionalProperties != null)
@@ -99,6 +98,7 @@ public class BaseCronJobWithNugetIndexingTestCase
             throws Exception
     {
         CronTaskConfigurationDto cronTaskConfiguration = new CronTaskConfigurationDto();
+        cronTaskConfiguration.setCronExpression("0 11 11 11 11 ? 2100");
         cronTaskConfiguration.setOneTimeExecution(true);
         cronTaskConfiguration.setImmediateExecution(true);
         cronTaskConfiguration.setUuid(jobName);

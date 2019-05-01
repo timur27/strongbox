@@ -30,7 +30,7 @@ public class CronJobSchedulerServiceImpl
     @Override
     public void scheduleJob(CronTaskConfigurationDto cronTaskConfiguration)
     {
-        String jobClassName = cronTaskConfiguration.getProperty("jobClass");
+        String jobClassName = cronTaskConfiguration.getJobClass();
         Class<? extends Job> jobClass;
         try
         {
@@ -94,7 +94,7 @@ public class CronJobSchedulerServiceImpl
                                                                .withIdentity(triggerKey)
                                                                .forJob(jobDetail);
 
-        String cronExpression = cronTaskConfiguration.getProperty("cronExpression");
+        String cronExpression = cronTaskConfiguration.getCronExpression();
         triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(cronExpression));
         Trigger trigger = triggerBuilder.build();
 
@@ -157,12 +157,15 @@ public class CronJobSchedulerServiceImpl
             }
 
             JobDataMap jobDataMap = jobDetail.getJobDataMap();
-            if (!GroovyCronJob.class.getName().equals(jobDataMap.get("jobClass")))
+
+            CronTaskConfigurationDto configuration = (CronTaskConfigurationDto) jobDataMap.get("config");
+
+            if (!GroovyCronJob.class.getCanonicalName().equals(configuration.getJobClass()))
             {
                 continue;
             }
 
-            String groovyScriptName = (String) jobDetail.getJobDataMap().get("fileName");
+            String groovyScriptName = configuration.getProperties().get("fileName");
             groovyScriptNames.addName(groovyScriptName);
         }
 

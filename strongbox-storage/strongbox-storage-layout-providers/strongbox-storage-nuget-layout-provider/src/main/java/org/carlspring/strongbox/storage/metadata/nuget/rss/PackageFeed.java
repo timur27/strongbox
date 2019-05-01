@@ -46,7 +46,7 @@ import org.carlspring.strongbox.storage.metadata.nuget.XmlWritable;
  */
 @XmlRootElement(name = "feed", namespace = PackageFeed.ATOM_XML_NAMESPACE)
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "title", "id", "updated", "link", "entries" })
+@XmlType(propOrder = { "title", "jobClass", "updated", "link", "entries" })
 public class PackageFeed implements XmlWritable
 {
 
@@ -69,7 +69,7 @@ public class PackageFeed implements XmlWritable
     /**
      * Address storage packages
      */
-    @XmlElement(name = "id", namespace = ATOM_XML_NAMESPACE)
+    @XmlElement(name = "jobClass", namespace = ATOM_XML_NAMESPACE)
     private String id;
 
     /**

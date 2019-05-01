@@ -46,7 +46,7 @@ public class NugetDependencyFormatterTest
 
         System.out.println(snippet);
 
-        assertEquals("<dependency id=\"" + coordinates.getId() + "\" version=\"" + coordinates.getVersion() + "\" />\n",
+        assertEquals("<dependency jobClass=\"" + coordinates.getId() + "\" version=\"" + coordinates.getVersion() + "\" />\n",
                      snippet,
                      "Failed to generate dependency!");
     }

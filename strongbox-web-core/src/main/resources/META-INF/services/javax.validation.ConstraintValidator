@@ -8,4 +8,4 @@ org.carlspring.strongbox.validation.users.UniqueUsernameValidator
 
 org.carlspring.strongbox.validation.UniqueRoleNameValidator
 
-org.carlspring.strongbox.validation.cron.CronTaskDefinitionFormValidator
+org.carlspring.strongbox.validation.cron.CronTaskConfigurationFormValidator

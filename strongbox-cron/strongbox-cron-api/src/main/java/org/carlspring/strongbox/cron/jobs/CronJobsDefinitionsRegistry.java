@@ -47,7 +47,7 @@ public class CronJobsDefinitionsRegistry
     public Optional<CronJobDefinition> get(String id)
     {
         return cronJobDefinitions.stream()
-                                 .filter(d -> d.getId().equals(id))
+                                 .filter(d -> d.getJobClass().equals(id))
                                  .findFirst();
     }
 }

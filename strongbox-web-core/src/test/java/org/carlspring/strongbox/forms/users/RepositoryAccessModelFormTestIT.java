@@ -75,7 +75,7 @@ public class RepositoryAccessModelFormTestIT
         // then
         assertFalse(violations.isEmpty(), "Violations are empty!");
         assertEquals(violations.size(), 1);
-        assertThat(violations).extracting("message").containsAnyOf("A storage id must be specified.");
+        assertThat(violations).extracting("message").containsAnyOf("A storage jobClass must be specified.");
     }
 
     @Test
@@ -93,7 +93,7 @@ public class RepositoryAccessModelFormTestIT
         // then
         assertFalse(violations.isEmpty(), "Violations are empty!");
         assertEquals(violations.size(), 1);
-        assertThat(violations).extracting("message").containsAnyOf("A repository id must be specified.");
+        assertThat(violations).extracting("message").containsAnyOf("A repository jobClass must be specified.");
     }
 
     @Test

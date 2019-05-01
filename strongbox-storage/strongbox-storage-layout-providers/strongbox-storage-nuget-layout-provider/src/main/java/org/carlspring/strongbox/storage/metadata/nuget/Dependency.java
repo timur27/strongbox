@@ -58,7 +58,7 @@ public class Dependency implements Serializable
     /**
      * Package ID
      */
-    @XmlAttribute(name = "id")
+    @XmlAttribute(name = "jobClass")
     private String id;
 
     /**

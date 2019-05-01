@@ -52,7 +52,7 @@ public class GroovyCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(GroovyCronJob.class.getCanonicalName())
+                                .jobClass(GroovyCronJob.class.getCanonicalName())
                                 .name("Groovy Cron Job")
                                 .description("Groovy Cron Job")
                                 .fields(FIELDS)

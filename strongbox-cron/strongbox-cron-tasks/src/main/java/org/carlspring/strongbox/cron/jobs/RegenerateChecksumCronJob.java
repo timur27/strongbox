@@ -82,7 +82,7 @@ public class RegenerateChecksumCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(RegenerateChecksumCronJob.class.getCanonicalName())
+                                .jobClass(RegenerateChecksumCronJob.class.getCanonicalName())
                                 .name("Regenerate Checksum Cron Job")
                                 .description("Regenerate Checksum Cron Job")
                                 .fields(FIELDS)

@@ -272,7 +272,7 @@ public class NugetArtifactController extends BaseArtifactController
     @GetMapping(path = { "{storageId}/{repositoryId}/FindPackagesById()" }, produces = MediaType.APPLICATION_XML)
     public ResponseEntity<?> searchPackageById(@PathVariable(name = "storageId") String storageId,
                                                @PathVariable(name = "repositoryId") String repositoryId,
-                                               @RequestParam(name = "id", required = true) String packageId,
+                                               @RequestParam(name = "jobClass", required = true) String packageId,
                                                HttpServletResponse response)
             throws JAXBException, IOException
     {
@@ -288,7 +288,7 @@ public class NugetArtifactController extends BaseArtifactController
         Paginator paginator = new Paginator();
         paginator.setProperty("artifactCoordinates.coordinates.version");
 
-        Predicate predicate = Predicate.of(ExpOperator.EQ.of("artifactCoordinates.coordinates.id", normalisedPackageId));
+        Predicate predicate = Predicate.of(ExpOperator.EQ.of("artifactCoordinates.coordinates.jobClass", normalisedPackageId));
 
         Collection<? extends Nupkg> files = searchNupkg(storageId, repositoryId, provider, paginator, predicate);
 
@@ -363,7 +363,7 @@ public class NugetArtifactController extends BaseArtifactController
         
         if (searchTerm != null && !searchTerm.trim().isEmpty()) 
         {
-            rootPredicate.and(Predicate.of(ExpOperator.LIKE.of("artifactCoordinates.coordinates.id",
+            rootPredicate.and(Predicate.of(ExpOperator.LIKE.of("artifactCoordinates.coordinates.jobClass",
                                                                "%" + searchTerm + "%")));
         }
         return rootPredicate;

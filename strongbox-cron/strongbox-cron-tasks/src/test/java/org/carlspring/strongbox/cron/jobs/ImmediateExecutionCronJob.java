@@ -21,7 +21,7 @@ public class ImmediateExecutionCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(ImmediateExecutionCronJob.class.getCanonicalName())
+                                .jobClass(ImmediateExecutionCronJob.class.getCanonicalName())
                                 .name("Immediate Execution Cron Job")
                                 .description("Immediate Execution Cron Job")
                                 .fields(java.util.Collections.emptySet())

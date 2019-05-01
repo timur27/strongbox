@@ -3,19 +3,19 @@ package org.carlspring.strongbox.forms.cron;
 /**
  * @author Przemyslaw Fusik
  */
-public class CronTaskDefinitionFormField
+public class CronTaskConfigurationFormField
 {
 
     private String name;
 
     private String value;
 
-    CronTaskDefinitionFormField()
+    CronTaskConfigurationFormField()
     {
 
     }
 
-    private CronTaskDefinitionFormField(Builder builder)
+    private CronTaskConfigurationFormField(Builder builder)
     {
         setName(builder.name);
         setValue(builder.value);
@@ -69,9 +69,9 @@ public class CronTaskDefinitionFormField
             return this;
         }
 
-        public CronTaskDefinitionFormField build()
+        public CronTaskConfigurationFormField build()
         {
-            return new CronTaskDefinitionFormField(this);
+            return new CronTaskConfigurationFormField(this);
         }
     }
 }

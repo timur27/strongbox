@@ -96,7 +96,7 @@ public class RemoveTimestampedMavenSnapshotCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(RemoveTimestampedMavenSnapshotCronJob.class.getCanonicalName())
+                                .jobClass(RemoveTimestampedMavenSnapshotCronJob.class.getCanonicalName())
                                 .name("Remove Timestamped Maven Snapshot Cron Job")
                                 .description("Remove Timestamped Maven Snapshot Cron Job")
                                 .fields(FIELDS)

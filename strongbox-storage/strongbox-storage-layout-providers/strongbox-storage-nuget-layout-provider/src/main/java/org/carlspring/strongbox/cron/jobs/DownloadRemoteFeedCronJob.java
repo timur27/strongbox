@@ -56,7 +56,7 @@ public class DownloadRemoteFeedCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(DownloadRemoteFeedCronJob.class.getCanonicalName())
+                                .jobClass(DownloadRemoteFeedCronJob.class.getCanonicalName())
                                 .name("Download Remote Feed Cron Job")
                                 .description("Download Remote Feed Cron Job")
                                 .fields(FIELDS)

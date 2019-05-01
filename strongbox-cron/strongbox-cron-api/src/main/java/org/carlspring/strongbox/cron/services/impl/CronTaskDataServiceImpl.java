@@ -5,6 +5,7 @@ import org.carlspring.strongbox.cron.domain.CronTaskConfiguration;
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
 import org.carlspring.strongbox.cron.domain.CronTasksConfigurationDto;
 import org.carlspring.strongbox.cron.exceptions.CronTaskUUIDNotUniqueException;
+import org.carlspring.strongbox.cron.jobs.CronJobsDefinitionsRegistry;
 import org.carlspring.strongbox.cron.services.CronTaskDataService;
 import org.carlspring.strongbox.cron.services.support.CronTaskConfigurationSearchCriteria;
 
@@ -39,6 +40,8 @@ public class CronTaskDataServiceImpl
 
     private CronTasksConfigurationFileManager cronTasksConfigurationFileManager;
 
+    private CronJobsDefinitionsRegistry cronJobsDefinitionsRegistry;
+
     /**
      * Yes, this is a state object.
      * It is protected by the {@link #cronTasksConfigurationLock} here
@@ -47,12 +50,14 @@ public class CronTaskDataServiceImpl
     private final CronTasksConfigurationDto configuration;
 
     @Inject
-    public CronTaskDataServiceImpl(CronTasksConfigurationFileManager cronTasksConfigurationFileManager)
+    public CronTaskDataServiceImpl(CronTasksConfigurationFileManager cronTasksConfigurationFileManager,
+                                   CronJobsDefinitionsRegistry cronJobsDefinitionsRegistry)
     {
         this.cronTasksConfigurationFileManager = cronTasksConfigurationFileManager;
-        
+        this.cronJobsDefinitionsRegistry = cronJobsDefinitionsRegistry;
+
         CronTasksConfigurationDto cronTasksConfiguration = cronTasksConfigurationFileManager.read();
-        for (Iterator<CronTaskConfigurationDto> iterator = cronTasksConfiguration.getCronTaskConfigurations().iterator(); iterator.hasNext();)
+        for (Iterator<CronTaskConfigurationDto> iterator = cronTasksConfiguration.getCronTaskConfigurations().iterator(); iterator.hasNext(); )
         {
             CronTaskConfigurationDto c = iterator.next();
 
@@ -73,10 +78,10 @@ public class CronTaskDataServiceImpl
             }
 
         }
-        
+
         this.configuration = cronTasksConfiguration;
     }
-    
+
     @Override
     public CronTasksConfigurationDto getTasksConfigurationDto()
     {
@@ -107,7 +112,8 @@ public class CronTaskDataServiceImpl
         {
             Optional<CronTaskConfigurationDto> cronTaskConfiguration = configuration.getCronTaskConfigurations()
                                                                                     .stream()
-                                                                                    .filter(conf -> cronTaskConfigurationUuid.equals(conf.getUuid()))
+                                                                                    .filter(conf -> cronTaskConfigurationUuid.equals(
+                                                                                            conf.getUuid()))
                                                                                     .findFirst();
             return cronTaskConfiguration.map(SerializationUtils::clone).orElse(null);
         }
@@ -146,7 +152,7 @@ public class CronTaskDataServiceImpl
     }
 
     @Override
-    public void save(final CronTaskConfigurationDto dto)
+    public UUID save(final CronTaskConfigurationDto dto)
     {
         if (StringUtils.isBlank(dto.getUuid()))
         {
@@ -169,6 +175,8 @@ public class CronTaskDataServiceImpl
                                       .ifPresent(conf -> configuration.getCronTaskConfigurations().remove(conf));
                          configuration.getCronTaskConfigurations().add(dto);
                      });
+
+        return UUID.fromString(dto.getUuid());
     }
 
     @Override

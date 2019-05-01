@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
  * @author Przemyslaw Fusik
  */
 @Component
-public class StringCronTaskDefinitionFormFieldTypeValidator
-        implements CronTaskDefinitionFormFieldTypeValidator
+public class StringCronTaskConfigurationFormFieldTypeValidator
+        implements CronTaskConfigurationFormFieldTypeValidator
 {
 
     @Override

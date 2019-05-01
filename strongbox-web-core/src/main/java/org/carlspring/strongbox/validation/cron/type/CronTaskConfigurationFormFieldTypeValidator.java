@@ -3,7 +3,7 @@ package org.carlspring.strongbox.validation.cron.type;
 /**
  * @author Przemyslaw Fusik
  */
-public interface CronTaskDefinitionFormFieldTypeValidator
+public interface CronTaskConfigurationFormFieldTypeValidator
 {
 
     boolean isValid(String value);

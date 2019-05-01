@@ -29,7 +29,7 @@ public class OneTimeExecutionCronJob
     public CronJobDefinition getCronJobDefinition()
     {
         return CronJobDefinition.newBuilder()
-                                .id(OneTimeExecutionCronJob.class.getCanonicalName())
+                                .jobClass(OneTimeExecutionCronJob.class.getCanonicalName())
                                 .name("One Time Execution Cron Job")
                                 .description("One Time Execution Cron Job")
                                 .fields(Collections.emptySet())
