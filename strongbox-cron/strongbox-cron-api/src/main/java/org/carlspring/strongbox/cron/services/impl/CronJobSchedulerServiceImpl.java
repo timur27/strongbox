@@ -43,6 +43,9 @@ public class CronJobSchedulerServiceImpl
             return;
         }
 
+        // delete old job if exists
+        deleteJob(cronTaskConfiguration.getUuid());
+
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put("config", cronTaskConfiguration);
 

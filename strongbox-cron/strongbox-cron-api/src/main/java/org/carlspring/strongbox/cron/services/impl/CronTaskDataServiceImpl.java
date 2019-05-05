@@ -163,7 +163,19 @@ public class CronTaskDataServiceImpl
                 String errorMessage = String.format("Cron task configuration UUID '%s' already exists", dto.getUuid());
                 throw new CronTaskUUIDNotUniqueException(errorMessage);
             }
+        }
 
+        if (StringUtils.isBlank(dto.getName()))
+        {
+            cronJobsDefinitionsRegistry.getCronJobDefinitions()
+                                       .stream()
+                                       .filter(cj -> cj.getJobClass().equals(dto.getJobClass()))
+                                       .findFirst()
+                                       .map(cj -> {
+                                           dto.setName(cj.getName());
+                                           return cj;
+                                       }).orElseThrow(
+                    () -> new IllegalArgumentException(String.format("Unrecognized cron job %s", dto.getJobClass())));
         }
 
         modifyInLock(configuration ->
@@ -173,6 +185,8 @@ public class CronTaskDataServiceImpl
                                       .filter(conf -> StringUtils.equals(dto.getUuid(), conf.getUuid()))
                                       .findFirst()
                                       .ifPresent(conf -> configuration.getCronTaskConfigurations().remove(conf));
+
+
                          configuration.getCronTaskConfigurations().add(dto);
                      });
 

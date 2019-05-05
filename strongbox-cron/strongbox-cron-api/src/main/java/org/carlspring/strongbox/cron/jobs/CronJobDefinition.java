@@ -16,8 +16,6 @@ public class CronJobDefinition
 
     private String name;
 
-    private String description;
-
     private Set<CronJobField> fields;
 
     public String getJobClass()
@@ -28,11 +26,6 @@ public class CronJobDefinition
     public String getName()
     {
         return name;
-    }
-
-    public String getDescription()
-    {
-        return description;
     }
 
     public Set<CronJobField> getFields()
@@ -65,7 +58,6 @@ public class CronJobDefinition
         Assert.notNull(builder.jobClass, "jobClass should not be null");
         jobClass = builder.jobClass;
         name = builder.name;
-        description = builder.description;
         fields = builder.fields;
     }
 

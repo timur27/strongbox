@@ -44,7 +44,7 @@ class CronTaskConfigurationServiceImpl
             {
                 continue;
             }
-            
+
             cronJobSchedulerService.scheduleJob(dto);
         }
     }

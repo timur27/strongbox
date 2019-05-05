@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -33,7 +32,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -52,8 +50,9 @@ public class CronTaskController
         extends BaseController
 {
 
+    static final String HEADER_NAME_CRON_TASK_ID = "X-CRON-TASK-ID";
+
     static final String CRON_CONFIG_FILE_NAME_KEY = "fileName";
-    static final String CRON_CONFIG_JOB_CLASS_KEY = "jobClass";
     static final String CRON_CONFIG_SCRIPT_PATH_KEY = "script.path";
 
     private static final String SUCCESSFUL_SAVE_CONFIGURATION = "The configuration was saved successfully.";
@@ -114,8 +113,11 @@ public class CronTaskController
                                                                                        CronTaskConfigurationDto.class);
             UUID uuid = cronTaskConfigurationService.saveConfiguration(cronTaskConfiguration);
 
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(HEADER_NAME_CRON_TASK_ID, uuid.toString());
+
             return getSuccessfulResponseEntity(SUCCESSFUL_SAVE_CONFIGURATION,
-                                               new HttpHeaders(new LinkedMultiValueMap(ImmutableMap.of("X-CRON-TASK-ID", uuid.toString()))),
+                                               httpHeaders,
                                                acceptHeader);
         }
         catch (Exception e)
@@ -130,7 +132,7 @@ public class CronTaskController
     @ApiOperation(value = "Used to update an existing configuration")
     @ApiResponses(value = { @ApiResponse(code = 200, message = SUCCESSFUL_UPDATE_CONFIGURATION),
                             @ApiResponse(code = 400, message = FAILED_UPDATE_CONFIGURATION) })
-    @PutMapping(value = "{UUID}",
+    @PutMapping(value = "/{UUID}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = { MediaType.TEXT_PLAIN_VALUE,
                          MediaType.APPLICATION_JSON_VALUE })
@@ -185,19 +187,11 @@ public class CronTaskController
         try
         {
             cronTaskConfigurationService.deleteConfiguration(config.getUuid());
-            if (config.contains(CRON_CONFIG_JOB_CLASS_KEY))
+            if (config.getJobClass().equals(GroovyCronJob.class.getCanonicalName()) &&
+                config.getProperty(CRON_CONFIG_SCRIPT_PATH_KEY) != null)
             {
-                String className = config.getProperty(CRON_CONFIG_JOB_CLASS_KEY);
-                Class<?> c = Class.forName(className);
-                Object classInstance = c.getConstructor().newInstance();
-
-                logger.debug("> {}", c.getSuperclass().getCanonicalName());
-
-                if (classInstance instanceof GroovyCronJob)
-                {
-                    Path path = Paths.get(config.getProperty(CRON_CONFIG_SCRIPT_PATH_KEY));
-                    Files.deleteIfExists(path);
-                }
+                Path path = Paths.get(config.getProperty(CRON_CONFIG_SCRIPT_PATH_KEY));
+                Files.deleteIfExists(path);
             }
         }
         catch (Exception e)
